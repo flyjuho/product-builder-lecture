@@ -1,0 +1,32 @@
+{
+  "host": "0.0.0.0",
+  "port": 8080,
+  "token": "CHANGE-ME-long-random-string",
+  "presets_file": "presets.json",
+  "adsb_json": "/run/readsb/aircraft.json",
+  "tar1090_url": "/tar1090/",
+  "receivers": [
+    {
+      "id": "atc1",
+      "name": "ATC 채널 1 (관제탑)",
+      "device": "AIR1",
+      "frequency": "118.100",
+      "gain": 40,
+      "squelch": 0,
+      "ppm": 0,
+      "bitrate": "32k",
+      "bands": ["vor", "vhf", "uhf"]
+    },
+    {
+      "id": "atc2",
+      "name": "ATC 채널 2 (접근/비상)",
+      "device": "AIR2",
+      "frequency": "121.500",
+      "gain": 40,
+      "squelch": 0,
+      "ppm": 0,
+      "bitrate": "32k",
+      "bands": ["vor", "vhf", "uhf"]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+[Unit]
+Description=ATC remote receiver controller (rtl_fm -> MP3 stream + web control)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=atcctl
+Group=atcctl
+SupplementaryGroups=plugdev
+WorkingDirectory=/opt/atcctl
+ExecStart=/usr/bin/python3 -m atcctl -c /etc/atcctl/config.json
+Restart=always
+RestartSec=5
+# 하드닝
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/etc/atcctl
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

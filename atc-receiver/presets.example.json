@@ -1,0 +1,8 @@
+[
+  {"name": "국제 비상 (Guard)", "frequency": "121.500"},
+  {"name": "군 비상 (UHF Guard)", "frequency": "243.000"},
+  {"name": "예시: 관제탑 TWR", "frequency": "118.100"},
+  {"name": "예시: 지상 GND", "frequency": "121.900"},
+  {"name": "예시: 접근 APP", "frequency": "119.100"},
+  {"name": "예시: ATIS", "frequency": "127.650"}
+]

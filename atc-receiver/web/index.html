@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ATC 원격 수신기</title>
+<link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<header>
+  <h1>ATC 원격 수신기</h1>
+  <div class="auth">
+    <input id="token" type="password" placeholder="접속 토큰" autocomplete="current-password">
+    <button id="saveToken">저장</button>
+  </div>
+</header>
+
+<main>
+  <section>
+    <h2>항공 무선 (청취)</h2>
+    <div id="receivers" class="grid"></div>
+  </section>
+
+  <section>
+    <h2>프리셋</h2>
+    <div id="presets" class="presets"></div>
+    <form id="presetForm" class="row">
+      <input name="name" placeholder="이름 (예: 김포 TWR)" required>
+      <input name="frequency" placeholder="MHz (예: 118.100)" required inputmode="decimal">
+      <button>추가</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>ADS-B / Mode S <a id="mapLink" href="/tar1090/" target="_blank">지도 열기 ↗</a></h2>
+    <p id="adsbSummary" class="muted">불러오는 중…</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ICAO</th><th>편명</th><th>Squawk</th><th>고도(ft)</th><th>속도(kt)</th><th>위치</th><th>유형</th><th>RSSI</th><th>경과(s)</th></tr></thead>
+        <tbody id="aircraft"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<template id="rxTpl">
+  <article class="card">
+    <header><strong class="name"></strong><span class="state"></span></header>
+    <div class="freq"><span class="mhz"></span> <small>MHz</small></div>
+    <form class="tune">
+      <label>주파수 <input name="frequency" inputmode="decimal"></label>
+      <label>게인 <input name="gain" placeholder="auto 또는 0-50"></label>
+      <label>스퀠치 <input name="squelch" type="number" min="0" max="1000"></label>
+      <button>변경</button>
+    </form>
+    <div class="row">
+      <button class="listen">▶ 청취</button>
+      <button class="stop secondary">■ 정지</button>
+      <select class="presetSel"><option value="">프리셋 선택…</option></select>
+    </div>
+    <audio preload="none"></audio>
+    <p class="err"></p>
+  </article>
+</template>
+
+<script src="/app.js"></script>
+</body>
+</html>
