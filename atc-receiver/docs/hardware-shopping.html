@@ -1,0 +1,461 @@
+<title>ATC·ADS-B 수신국 장비 리스트</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* Layout: 항공 차트(VFR sectional) 같은 종이+잉크 톤, 좌측 단계 내비 없이 단일 컬럼 + 우측 고정 합계(넓은 화면) */
+:root {
+  --paper: #f4f6f3;
+  --panel: #ffffff;
+  --ink: #13233b;
+  --muted: #56657a;
+  --rule: #d9dfe3;
+  --magenta: #a1286c;      /* 항공 차트 마젠타 */
+  --magenta-soft: #f6e6ef;
+  --blue: #1f5fa8;
+  --ok: #1d7a46;
+  --warn: #a35a00;
+  --warn-soft: #fbf0df;
+  --font-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0e1622; --panel: #152131; --ink: #e4eaf2; --muted: #9aa9bb; --rule: #26354a;
+    --magenta: #e17ab2; --magenta-soft: #3a1f30; --blue: #7fb2ee; --ok: #5fd08f;
+    --warn: #f0b35c; --warn-soft: #3a2c16; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0e1622; --panel: #152131; --ink: #e4eaf2; --muted: #9aa9bb; --rule: #26354a;
+  --magenta: #e17ab2; --magenta-soft: #3a1f30; --blue: #7fb2ee; --ok: #5fd08f;
+  --warn: #f0b35c; --warn-soft: #3a2c16; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--paper); color: var(--ink); font-family: var(--font-body);
+  font-size: 15px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 48px;
+}
+a { color: var(--blue); }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--magenta); outline-offset: 2px; }
+.wrap { max-width: 1180px; margin: 0 auto; }
+h1, h2, h3 { text-wrap: balance; line-height: 1.25; margin: 0; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--magenta); }
+
+/* header */
+.top { padding-block: 36px 20px; display: grid; gap: 10px; border-bottom: 2px solid var(--ink); }
+.top h1 { font-size: clamp(26px, 4vw, 36px); font-weight: 700; }
+.top p { margin: 0; color: var(--muted); max-width: 70ch; }
+.freqstrip { display: flex; flex-wrap: wrap; gap: 6px 18px; font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+.freqstrip b { color: var(--ink); font-weight: 600; }
+
+/* layout */
+.grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 32px; align-items: start; margin-top: 28px; }
+@media (max-width: 960px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+main { display: grid; gap: 40px; min-width: 0; }
+section { display: grid; gap: 14px; min-width: 0; }
+section > h2 { font-size: 21px; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+section > h2 .step { font-family: var(--font-mono); font-size: 13px; color: var(--magenta); border: 1px solid var(--magenta); border-radius: 3px; padding: 0 6px; }
+.lead { margin: 0; color: var(--muted); max-width: 72ch; }
+
+/* signal chain */
+.chain { background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 18px; overflow-x: auto; }
+.chain-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.node { border: 1.5px solid var(--ink); border-radius: 4px; padding: 6px 10px; font-size: 13px; background: var(--paper); white-space: nowrap; }
+.node.out { border-color: var(--magenta); color: var(--magenta); font-weight: 600; }
+.node.zone { border-style: dashed; }
+.arrow { color: var(--muted); font-family: var(--font-mono); }
+.branches { display: grid; gap: 8px; margin-top: 12px; padding-left: 18px; border-left: 2px solid var(--ink); }
+.zone-label { font-family: var(--font-mono); font-size: 11px; color: var(--muted); letter-spacing: .06em; margin: 10px 0 6px; }
+.why { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.why div { border-top: 2px solid var(--magenta); padding-top: 8px; font-size: 14px; }
+.why b { display: block; }
+
+/* tier switch */
+.tiers { display: flex; flex-wrap: wrap; gap: 8px; }
+.tiers button { font: inherit; font-size: 14px; padding: 8px 14px; border-radius: 999px; border: 1.5px solid var(--ink); background: transparent; color: var(--ink); cursor: pointer; }
+.tiers button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--muted); }
+
+/* items */
+.items { display: grid; gap: 10px; }
+.item { background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 14px; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 6px 14px; align-items: start; }
+.item.off { opacity: .55; }
+.item input[type=checkbox] { width: 18px; height: 18px; margin-top: 3px; accent-color: var(--magenta); }
+.item h3 { font-size: 16px; font-weight: 700; }
+.item .spec { margin: 2px 0 0; font-size: 13.5px; color: var(--muted); }
+.item .note { margin: 6px 0 0; font-size: 13px; padding: 6px 10px; border-radius: 4px; background: var(--warn-soft); color: var(--ink); }
+.item .note::before { content: "확인  "; font-family: var(--font-mono); font-size: 11px; color: var(--warn); font-weight: 600; }
+.item .buy { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 8px; font-size: 13.5px; align-items: center; }
+.kw { font-family: var(--font-mono); font-size: 12.5px; background: var(--paper); border: 1px solid var(--rule); border-radius: 3px; padding: 1px 6px; cursor: pointer; color: var(--ink); }
+.kw:hover { border-color: var(--magenta); }
+.price { text-align: right; display: grid; gap: 4px; justify-items: end; min-width: 108px; }
+.price .usd { font-family: var(--font-mono); font-weight: 600; font-variant-numeric: tabular-nums; }
+.price .krw { font-family: var(--font-mono); font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.qty { display: flex; align-items: center; gap: 4px; font-size: 12.5px; color: var(--muted); }
+.qty input { width: 46px; font: inherit; font-family: var(--font-mono); padding: 2px 4px; border: 1px solid var(--rule); border-radius: 3px; background: var(--paper); color: var(--ink); }
+.badge { display: inline-block; font-size: 11.5px; font-weight: 500; padding: 1px 7px; border-radius: 3px; vertical-align: 2px; margin-left: 4px; white-space: nowrap; }
+.b-official { background: var(--magenta); color: var(--panel); }
+.b-ali { background: var(--magenta-soft); color: var(--magenta); }
+.b-kr { background: transparent; color: var(--blue); border: 1px solid var(--blue); }
+.b-other { background: transparent; color: var(--muted); border: 1px solid var(--rule); }
+.tag-est { font-size: 11px; color: var(--warn); font-family: var(--font-mono); }
+.tag-ok { font-size: 11px; color: var(--ok); font-family: var(--font-mono); }
+@media (max-width: 560px) {
+  .item { grid-template-columns: auto minmax(0, 1fr); }
+  .price { grid-column: 2; justify-items: start; text-align: left; grid-auto-flow: column; align-items: center; gap: 10px; }
+}
+
+/* summary */
+aside { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); display: grid; gap: 14px; }
+@media (max-width: 960px) { aside { position: static; } }
+.sum { background: var(--panel); border: 1.5px solid var(--ink); border-radius: 6px; padding: 16px; display: grid; gap: 10px; }
+.sum h2 { font-size: 16px; }
+.sum dl { margin: 0; display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; font-size: 14px; }
+.sum dt { color: var(--muted); }
+.sum dd { margin: 0; text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.sum .total { font-size: 22px; font-weight: 600; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.sum label { font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.sum label input { width: 84px; font: inherit; font-family: var(--font-mono); padding: 3px 6px; border: 1px solid var(--rule); border-radius: 3px; background: var(--paper); color: var(--ink); text-align: right; }
+.alert { font-size: 13px; padding: 8px 10px; border-radius: 4px; background: var(--warn-soft); border-left: 3px solid var(--warn); }
+.alert.ok { background: transparent; border-left-color: var(--ok); }
+.small { font-size: 12.5px; color: var(--muted); margin: 0; }
+
+/* tips */
+.tips { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.tip { background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 14px; font-size: 14px; }
+.tip h3 { font-size: 15px; margin-bottom: 6px; }
+.tip ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+ol.steps { margin: 0; padding-left: 22px; display: grid; gap: 8px; max-width: 75ch; }
+.sources { font-size: 13px; color: var(--muted); columns: 2 280px; column-gap: 24px; }
+.sources a { display: block; margin-bottom: 4px; break-inside: avoid; }
+#toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 20px); transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 8px 14px; border-radius: 4px; font-size: 13px; }
+@media (prefers-reduced-motion: no-preference) { .item { transition: opacity .15s; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <span class="eyebrow">안테나 1개 · SDR 3대 · Raspberry Pi 5</span>
+    <h1>ATC·ADS-B 수신국 장비 리스트</h1>
+    <p>항공 무선(ATC) 청취와 ADS-B/Mode S 수집을 위한 장비를 단계별로 정리했습니다. 가능한 품목은 알리익스프레스에서 사도록 구성했고, 품질이나 인증 문제로 알리 구매를 권하지 않는 품목에는 대안을 적었습니다.</p>
+    <div class="freqstrip"><span>VHF 항공 <b>118.000–136.990</b> MHz</span><span>UHF 군용 <b>225–400</b> MHz</span><span>ADS-B / Mode S <b>1090</b> MHz</span><span>조사 <b>2026-11</b></span></div>
+  </header>
+
+  <div class="grid">
+    <main>
+      <section id="chain">
+        <h2><span class="step">구성</span>신호 흐름</h2>
+        <div class="chain">
+          <div class="zone-label">실외 · 방수함</div>
+          <div class="chain-row">
+            <span class="node">디스콘 안테나</span><span class="arrow">→</span>
+            <span class="node">낙뢰보호기 (DC패스)</span><span class="arrow">→</span>
+            <span class="node">FM 노치 88–108</span><span class="arrow">→</span>
+            <span class="node">광대역 LNA</span>
+          </div>
+          <div class="zone-label">실내</div>
+          <div class="chain-row">
+            <span class="arrow">→</span><span class="node">저손실 동축</span><span class="arrow">→</span>
+            <span class="node">바이어스-T (LNA 전원)</span><span class="arrow">→</span>
+            <span class="node">4분배기 5–2400 MHz</span>
+          </div>
+          <div class="branches">
+            <div class="chain-row"><span class="node">1090 SAW 필터+LNA</span><span class="arrow">→</span><span class="node out">SDR “1090” · ADS-B/Mode S</span></div>
+            <div class="chain-row"><span class="node">에어밴드 BPF 118–137</span><span class="arrow">→</span><span class="node out">SDR “AIR1” · ATC</span></div>
+            <div class="chain-row"><span class="node">에어밴드 BPF 118–137</span><span class="arrow">→</span><span class="node out">SDR “AIR2” · ATC</span></div>
+            <div class="chain-row"><span class="node zone">예비 포트 → 50Ω 종단 (또는 UHF용 SDR)</span></div>
+          </div>
+        </div>
+        <div class="why">
+          <div><b>FM 노치는 LNA 앞</b>근처 FM 방송이 LNA를 포화시키면 뒤에서는 걸러낼 수 없습니다.</div>
+          <div><b>LNA는 안테나 옆</b>분배 손실 약 7 dB와 케이블 손실을 증폭 전에 겪지 않도록 합니다.</div>
+          <div><b>분기마다 대역 필터</b>ADS-B는 1090만, ATC는 118–137만 통과시켜 서로 간섭을 막습니다.</div>
+        </div>
+      </section>
+
+      <section id="list">
+        <h2><span class="step">장비</span>단계별 구매 리스트</h2>
+        <p class="lead">구성을 고르면 해당 품목이 체크됩니다. 체크와 수량은 직접 바꿀 수 있고, 오른쪽 합계가 바로 계산됩니다. 검색어를 누르면 복사됩니다.</p>
+        <div class="tiers" role="group" aria-label="구성 선택">
+          <button type="button" data-tier="basic" id="tier-basic">입문 · 실내</button>
+          <button type="button" data-tier="standard" id="tier-standard">권장 · 실외 단일 안테나</button>
+          <button type="button" data-tier="advanced" id="tier-advanced">고급 · Airspy + 정품 안테나</button>
+        </div>
+        <div class="legend">
+          <span><span class="badge b-official">알리 공식점</span> 제조사 공식 스토어</span>
+          <span><span class="badge b-ali">알리 일반</span> 판매자 비교 필요</span>
+          <span><span class="badge b-kr">국내 권장</span></span>
+          <span><span class="badge b-other">해외 공식</span> 알리에 없음</span>
+          <span><span class="tag-ok">확인가</span> 판매 페이지 확인 · <span class="tag-est">추정</span> 일반 시세</span>
+        </div>
+        <div id="stages"></div>
+      </section>
+
+      <section id="howto">
+        <h2><span class="step">구매</span>알리익스프레스 주문 방법</h2>
+        <ol class="steps">
+          <li><b>개인통관고유부호</b>를 관세청 유니패스에서 발급하고 알리 배송지에 등록합니다. 2026년부터 유효기간이 생겨 신규 발급분은 1년마다 갱신이 필요합니다.</li>
+          <li>RTL-SDR 제품은 판매자 이름이 정확히 <span class="mono">RTLSDRBlog Store</span>인지 확인합니다. 낮은 평점에 시세보다 싼 판매자는 제조사가 사기로 경고한 곳입니다.</li>
+          <li>일반 품목은 <b>주문 수, 평점 4.7 이상, 사진 리뷰</b>를 기준으로 고르고, 상품 페이지의 주파수 범위와 커넥터(SMA 수/암, N형)를 확인합니다.</li>
+          <li>Choice 표시 상품끼리 묶으면 무료배송 기준을 맞추기 쉽습니다.</li>
+          <li>오른쪽 합계의 <b>알리 주문 합계</b>가 150달러를 넘으면 결제일을 나눠 주문합니다. 같은 날 결제한 물품은 합산과세될 수 있습니다.</li>
+          <li>도착하면 <span class="mono">rtl_test -t</span>로 동글을 확인하고, 이상이 있으면 수령 후 기간 안에 분쟁을 엽니다.</li>
+        </ol>
+      </section>
+
+      <section id="tips">
+        <h2><span class="step">주의</span>알리에서 사면 안 되는 것, 조심할 것</h2>
+        <div class="tips">
+          <div class="tip"><h3>국내에서 살 것</h3><ul>
+            <li><b>microSD·SSD</b>: 알리는 용량 위조 카드가 흔합니다.</li>
+            <li><b>LTE 라우터</b>: 전파를 내보내는 기기라 국내 KC 인증품을 써야 합니다.</li>
+            <li><b>Raspberry Pi 5</b>: 국내가(177,518원)와 비슷하고 A/S가 쉽습니다. 알리 공식 리셀러 가격이 더 낮을 때만 알리에서 사세요.</li>
+          </ul></div>
+          <div class="tip"><h3>복제품 주의</h3><ul>
+            <li>“for RTL SDR V4”, “compatible” 표기는 정품이 아닙니다.</li>
+            <li>Airspy는 알리 공식점이 없고 복제품이 돌아다닙니다. Itead 또는 WiMo 같은 공식 대리점에서 사세요.</li>
+            <li>“Diamond D130” 이름을 단 저가 디스콘은 대부분 비정품입니다. 수신용으로는 쓸 만하지만 정품 성능을 기대하지 마세요.</li>
+          </ul></div>
+          <div class="tip"><h3>사양 함정</h3><ul>
+            <li>알리 1090 필터 LNA 중 상당수는 <b>바이어스-T 급전이 안 되고</b> USB 5V가 따로 필요합니다.</li>
+            <li>에어밴드 필터는 118–<b>136</b> MHz 제품이 많습니다. 136–137 MHz까지 들으려면 감쇠표를 확인하세요.</li>
+            <li>“0.4–6 GHz” 분배기는 118 MHz를 통과시키지 못합니다. 하한이 5 MHz 근처인 제품을 고르세요.</li>
+            <li>FlightAware Pro Stick Plus는 디스콘에 붙이면 포화된다는 리뷰가 있어 이 구성에는 맞지 않습니다.</li>
+          </ul></div>
+        </div>
+      </section>
+
+      <section id="sources">
+        <h2><span class="step">출처</span>가격·정보 출처</h2>
+        <div class="sources">
+          <a href="https://www.rtl-sdr.com/buy-rtl-sdr-dvb-t-dongles/" target="_blank" rel="noopener">RTL-SDR Blog 구매 안내 (알리 공식점 이름)</a>
+          <a href="https://www.ebay.com/str/rtlsdrblog" target="_blank" rel="noopener">RTL-SDR Blog 공식 eBay (V4 가격)</a>
+          <a href="https://www.rtl-sdr.com/product/rtl-sdr-blog-broadcast-fm-band-stop-filter/" target="_blank" rel="noopener">RTL-SDR Blog FM 노치 필터</a>
+          <a href="https://www.rtl-sdr.com/product/rtl-sdr-blog-wideband-lna-bias-tee-powered/" target="_blank" rel="noopener">RTL-SDR Blog 광대역 LNA</a>
+          <a href="https://www.rtl-sdr.com/product/rtl-sdr-blog-ads-b-triple-filtered-lna-bias-tee-powered/" target="_blank" rel="noopener">RTL-SDR Blog ADS-B Triple Filtered LNA</a>
+          <a href="https://airspy.com/purchase/" target="_blank" rel="noopener">Airspy 공식 구매처 (Itead 등)</a>
+          <a href="https://www.wimo.com/fr/airspy-mini" target="_blank" rel="noopener">WiMo Airspy Mini</a>
+          <a href="https://www.rtl-sdr.com/cloned-sdrplay-and-airspy-units-now-appearing-on-aliexpress-ebay/" target="_blank" rel="noopener">알리 Airspy 복제품 경고</a>
+          <a href="https://scannermaster.com/D130NJ_Diamond_Super_Discone_Antenna_p/48-541857.htm" target="_blank" rel="noopener">Diamond D-130NJ (ScannerMaster)</a>
+          <a href="https://www.dxengineering.com/parts/dmn-d130j" target="_blank" rel="noopener">Diamond D-130J (DX Engineering)</a>
+          <a href="https://www.rtl-sdr.com/flightaware-prostick-vs-flightaware-prostick-plus-review/" target="_blank" rel="noopener">Pro Stick vs Pro Stick Plus 리뷰</a>
+          <a href="https://discussions.flightaware.com/t/lna-and-filter/88776" target="_blank" rel="noopener">FlightAware 포럼: 1090 필터 LNA 급전</a>
+          <a href="https://www.tindie.com/products/gpio/airband-bandpass-filter-118-138-mhz" target="_blank" rel="noopener">GPIO Labs 에어밴드 필터 (Tindie)</a>
+          <a href="https://www.devicemart.co.kr/goods/view?no=15392299" target="_blank" rel="noopener">디바이스마트 Raspberry Pi 5 8GB</a>
+          <a href="https://www.customs.go.kr/kcs/ad/tax/BuyTaxCalculation.do?mi=2853" target="_blank" rel="noopener">관세청 해외직구 예상세액 조회</a>
+          <a href="https://braindetox.kr/posts/black_friday_2026_overseas_direct_purchase_customs_limit.html" target="_blank" rel="noopener">2026 직구 면세한도·합산과세 정리</a>
+        </div>
+      </section>
+    </main>
+
+    <aside>
+      <div class="sum" aria-live="polite">
+        <h2>예상 비용</h2>
+        <div class="total" id="sumTotal">—</div>
+        <p class="small" id="sumRange"></p>
+        <dl>
+          <dt>알리 주문 합계</dt><dd id="sumAli">—</dd>
+          <dt>국내 구매</dt><dd id="sumKr">—</dd>
+          <dt>해외 공식몰</dt><dd id="sumOther">—</dd>
+          <dt>선택 품목</dt><dd id="sumCount">—</dd>
+        </dl>
+        <label for="fx">환율 (원/USD) <input id="fx" type="number" min="800" max="3000" step="10" value="1400"></label>
+        <div class="alert" id="dutyAlert"></div>
+        <p class="small">배송비와 관부가세는 포함하지 않았습니다. 범위의 중간값으로 합계를 냅니다.</p>
+      </div>
+    </aside>
+  </div>
+</div>
+<div id="toast" hidden></div>
+
+<script>
+"use strict";
+const ali = (q) => "https://www.aliexpress.com/w/wholesale-" + encodeURIComponent(q.trim().replace(/\s+/g, "-")) + ".html";
+
+// where: official(알리 공식점) | ali(알리 일반) | kr(국내) | other(해외 공식몰)
+// usd/krw: [low, high], verified: 판매 페이지에서 확인한 가격인지
+const STAGES = [
+  { id: "s1", step: "1단계", title: "컴퓨터와 전원", lead: "라즈베리파이 본체와 주변기기입니다. SDR 1대만 먼저 꽂아 소프트웨어가 도는지 확인하는 단계입니다.", items: [
+    { id: "pi5", name: "Raspberry Pi 5 8GB", spec: "Wi-Fi 내장, USB 3.0 ×2. SDR 3대와 웹 서버를 동시에 돌리기에 충분합니다.", where: "kr", krw: [177518, 177518], verified: true, qty: 1, tiers: ["basic","standard","advanced"],
+      links: [["디바이스마트", "https://www.devicemart.co.kr/goods/view?no=15392299"]], kw: "raspberry pi 5 8gb" },
+    { id: "psu", name: "Pi 5용 27W USB-C PD 전원", spec: "5V 5A. 일반 휴대폰 충전기는 USB 전력이 제한되어 SDR이 끊길 수 있습니다.", where: "ali", usd: [12, 18], qty: 1, tiers: ["basic","standard","advanced"], kw: "raspberry pi 5 27W power supply official" },
+    { id: "cool", name: "Pi 5 액티브 쿨러 + 케이스", spec: "24시간 운용 시 발열 관리용입니다.", where: "ali", usd: [8, 15], qty: 1, tiers: ["basic","standard","advanced"], kw: "raspberry pi 5 active cooler case" },
+    { id: "sd", name: "microSD 64GB A2 (Samsung PRO Plus / SanDisk Extreme)", spec: "OS 설치용입니다.", where: "kr", krw: [12000, 20000], qty: 1, tiers: ["basic","standard","advanced"], note: "알리 SD카드는 용량 위조품이 흔해 국내 구매를 권합니다.", kw: "" },
+    { id: "hub", name: "유전원 USB 3.0 허브 4포트 (UGREEN / ORICO 공식점)", spec: "어댑터 5V 3A 이상, 포트별 스위치형. SDR 3대 이상이면 필수입니다.", where: "ali", usd: [15, 30], qty: 1, tiers: ["basic","standard","advanced"], kw: "UGREEN powered usb 3.0 hub 4 port", note: "판매자가 UGREEN Official Store 또는 ORICO Official Store인지 확인하세요." },
+  ]},
+  { id: "s2", step: "2단계", title: "SDR 수신기", lead: "동글 1대가 한 역할을 맡습니다(1090 / AIR1 / AIR2). 시리얼을 기록해 두면 꽂는 순서와 상관없이 역할이 고정됩니다.", items: [
+    { id: "v4", name: "RTL-SDR Blog V4 (안테나 키트 번들)", spec: "R828D 튜너, 1 PPM TCXO, 바이어스-T 내장. 기본 다이폴은 1단계 시험용으로 씁니다.", where: "official", usd: [39.95, 44.95], verified: true, qty: 3, tiers: ["basic","standard"], qtyByTier: { advanced: 1 }, kw: "RTLSDRBlog Store V4",
+      note: "판매자 이름이 RTLSDRBlog Store인지 확인하세요. 제조사는 V4 생산을 2026년 말까지로 예고해 재고가 줄 수 있습니다." },
+    { id: "airspy", name: "Airspy Mini (ADS-B·ATC1용)", spec: "12비트 ADC, 24–1800 MHz. airspy_adsb로 RTL보다 수신 메시지와 거리가 좋습니다.", where: "other", usd: [79, 99], verified: true, qty: 2, tiers: ["advanced"],
+      links: [["Airspy 공식 구매처", "https://airspy.com/purchase/"], ["WiMo", "https://www.wimo.com/fr/airspy-mini"]],
+      note: "알리에는 공식점이 없고 복제품이 있습니다. 여름(20%)이나 블랙프라이데이(15%) 세일 때 공식 대리점에서 사세요." },
+  ]},
+  { id: "s3", step: "3단계", title: "안테나와 분배 시스템", lead: "안테나 1개로 모든 SDR에 신호를 나눠 주는 부분입니다. 성능 차이가 가장 크게 나는 단계입니다.", items: [
+    { id: "discone", name: "광대역 디스콘 안테나 25–1300 MHz", spec: "VHF 항공, UHF 군용, 1090 MHz를 안테나 하나로 받습니다. 높고 트인 곳에 설치하세요.", where: "ali", usd: [40, 80], qty: 1, tiers: ["basic","standard"], kw: "discone antenna 25-1300MHz",
+      note: "알루미늄이나 스테인리스 재질, N형 커넥터 제품을 고르세요. 동봉된 얇은 케이블은 1090 MHz 손실이 커서 쓰지 않는 편이 좋습니다." },
+    { id: "d130", name: "Diamond D-130NJ 슈퍼 디스콘 (정품, N형)", spec: "25–1300 MHz 수신, 스테인리스, 전장 1.7 m. 내구성과 성능이 검증된 정품입니다.", where: "other", usd: [149.95, 149.95], verified: true, qty: 1, tiers: ["advanced"],
+      links: [["ScannerMaster", "https://scannermaster.com/D130NJ_Diamond_Super_Discone_Antenna_p/48-541857.htm"], ["DX Engineering (D-130J)", "https://www.dxengineering.com/parts/dmn-d130j"]],
+      note: "길이가 긴 화물이라 해외 배송비가 큽니다. 국내 아마추어무선 용품점 가격과 먼저 비교하세요." },
+    { id: "fmnotch", name: "RTL-SDR Blog FM 노치 필터 88–108 MHz", spec: "FM 방송 혼변조를 막습니다. 단일 안테나 구성에서는 사실상 필수입니다.", where: "official", usd: [16.95, 17.95], verified: true, qty: 1, tiers: ["basic","standard","advanced"], kw: "RTLSDRBlog Store FM band stop filter" },
+    { id: "lna", name: "RTL-SDR Blog 광대역 LNA V2", spec: "50 MHz–4 GHz, NF 1 dB 미만, 3–5V 바이어스-T 급전. 분배 손실을 보상합니다.", where: "official", usd: [19.95, 19.95], verified: true, qty: 1, tiers: ["standard","advanced"], kw: "RTLSDRBlog Store wideband LNA" },
+    { id: "biast", name: "바이어스-T 인젝터 (USB 전원형)", spec: "실내에서 동축으로 LNA에 전원을 넣습니다.", where: "ali", usd: [6, 15], qty: 1, tiers: ["standard","advanced"], kw: "bias tee 10MHz-6GHz USB SMA" },
+    { id: "arrest", name: "N형 동축 낙뢰보호기 (DC 패스)", spec: "실외 안테나에는 필수입니다. 접지선과 함께 설치하세요.", where: "ali", usd: [8, 20], qty: 1, tiers: ["standard","advanced"], kw: "N type lightning arrester DC pass 0-3GHz",
+      note: "DC 블록형은 LNA 전원을 막습니다. 설명에 DC pass가 있는지 확인하세요." },
+    { id: "box", name: "IP65 방수 정션박스 + 케이블 글랜드", spec: "실외에 둘 FM 노치, LNA, 낙뢰보호기를 넣습니다.", where: "ali", usd: [5, 12], qty: 1, tiers: ["standard","advanced"], kw: "IP65 waterproof junction box ABS" },
+    { id: "coax", name: "저손실 동축 LMR-400 N-N 10 m", spec: "실외와 실내를 잇는 메인 케이블입니다. 짧을수록 좋습니다.", where: "ali", usd: [25, 45], qty: 1, tiers: ["basic","standard","advanced"], kw: "LMR400 cable N male N male 10m" },
+    { id: "adapt", name: "SMA 어댑터 세트 + RG316 점퍼", spec: "N-SMA, SMA 수-수/암-암, 15–30 cm 점퍼 여러 개.", where: "ali", usd: [8, 15], qty: 1, tiers: ["basic","standard","advanced"], kw: "SMA adapter kit RF N to SMA" },
+    { id: "split", name: "4분배기 5–2400 MHz (DC 패스 1포트)", spec: "안테나 신호를 SDR 여러 대로 나눕니다. 위성방송용 75Ω 분배기도 수신용으로 쓸 수 있습니다.", where: "ali", usd: [3, 10], qty: 1, tiers: ["basic","standard","advanced"], kw: "4 way splitter 5-2400MHz",
+      note: "F형 커넥터면 F-SMA 어댑터가 필요합니다. 하한 주파수가 5 MHz 근처인지 확인하세요." },
+    { id: "adsbof", name: "RTL-SDR Blog ADS-B Triple Filtered LNA", spec: "1090 MHz 3중 필터와 LNA, 바이어스-T 급전. V4 동글에서 바로 전원을 받습니다.", where: "official", usd: [39.95, 39.95], verified: true, qty: 1, tiers: ["standard","advanced"], kw: "RTLSDRBlog Store ADS-B LNA",
+      note: "자주 품절됩니다. 없으면 아래 알리 일반품으로 대체하세요." },
+    { id: "adsbgen", name: "1090 MHz SAW 필터 + LNA 모듈 (일반품)", spec: "통과대역 1075–1105 MHz 정도의 저가 모듈입니다.", where: "ali", usd: [10, 20], qty: 1, tiers: ["basic"], kw: "1090MHz ADS-B SAW filter LNA SMA",
+      note: "상당수가 바이어스-T 급전이 안 되고 USB 5V가 따로 필요합니다. 상품 설명의 전원 방식을 확인하세요." },
+    { id: "bpf", name: "에어밴드 대역통과 필터 118–137 MHz", spec: "ATC SDR마다 1개씩 답니다.", where: "ali", usd: [15, 30], qty: 2, tiers: ["basic","standard","advanced"], kw: "airband bandpass filter 118-136MHz SMA",
+      note: "118–136 MHz 제품이 많습니다. 136–137 MHz도 들으려면 GPIO Labs 118–138 MHz 제품(Tindie)을 고려하세요." },
+    { id: "dummy", name: "SMA 50Ω 더미로드", spec: "안 쓰는 분배기 포트를 막습니다.", where: "ali", usd: [2, 5], qty: 1, tiers: ["basic","standard","advanced"], kw: "SMA 50 ohm dummy load terminator" },
+  ]},
+  { id: "s4", step: "4단계", title: "안정화와 원격 운용", lead: "24시간 무인 운용을 위한 품목입니다. 원격 접속(Tailscale)은 무료입니다.", items: [
+    { id: "nvme", name: "Pi 5 NVMe HAT + SSD 256GB", spec: "microSD보다 수명이 길고 빠릅니다. Geekworm, 52Pi 공식점 제품이 많습니다.", where: "ali", usd: [25, 50], qty: 1, tiers: ["standard","advanced"], kw: "raspberry pi 5 nvme hat",
+      note: "HAT은 알리에서, SSD 본체는 국내에서 사는 것을 권합니다(위조품 문제)." },
+    { id: "ups", name: "Pi 5 UPS HAT (18650 배터리형)", spec: "정전 시 안전 종료와 자동 재시작을 합니다.", where: "ali", usd: [25, 45], qty: 1, tiers: ["advanced"], kw: "raspberry pi 5 UPS HAT 18650" },
+    { id: "lte", name: "LTE 라우터 (KC 인증품)", spec: "인터넷이 없는 설치 장소용입니다. 데이터 유심이 따로 필요합니다.", where: "kr", krw: [50000, 100000], qty: 1, tiers: ["advanced"],
+      note: "전파를 송신하는 기기라 국내 인증품을 사야 합니다. 알리 구매는 권하지 않습니다." },
+  ]},
+];
+
+const BADGE = { official: ["b-official", "알리 공식점"], ali: ["b-ali", "알리 일반"], kr: ["b-kr", "국내 권장"], other: ["b-other", "해외 공식"] };
+const ALL = STAGES.flatMap((s) => s.items);
+
+let state = { tier: "standard", sel: {}, qty: {}, fx: 1400 };
+try { const s = JSON.parse(localStorage.getItem("atc-shop") || "null"); if (s && s.sel) state = { ...state, ...s }; } catch (_) {}
+const save = () => { try { localStorage.setItem("atc-shop", JSON.stringify(state)); } catch (_) {} };
+
+function applyTier(tier) {
+  state.tier = tier;
+  for (const it of ALL) {
+    const inTier = it.tiers.includes(tier) || (it.qtyByTier && tier in it.qtyByTier);
+    state.sel[it.id] = inTier;
+    state.qty[it.id] = (it.qtyByTier && it.qtyByTier[tier]) || it.qty;
+  }
+}
+if (!Object.keys(state.sel).length) applyTier(state.tier);
+
+const won = (n) => "₩" + Math.round(n).toLocaleString("ko-KR");
+const usd = (n) => "$" + n.toFixed(n >= 100 ? 0 : 2);
+function unitUsd(it) { // 중간값, USD
+  if (it.usd) return (it.usd[0] + it.usd[1]) / 2;
+  return (it.krw[0] + it.krw[1]) / 2 / state.fx;
+}
+function priceText(it) {
+  if (it.krw) return it.krw[0] === it.krw[1] ? won(it.krw[0]) : won(it.krw[0]) + "–" + won(it.krw[1]).slice(1);
+  return it.usd[0] === it.usd[1] ? usd(it.usd[0]) : usd(it.usd[0]) + "–" + usd(it.usd[1]).slice(1);
+}
+
+function el(tag, attrs = {}, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") e.className = v; else if (k.startsWith("on")) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v);
+  }
+  for (const k of kids) if (k != null) e.append(k);
+  return e;
+}
+
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.hidden = false;
+  clearTimeout(toast._t); toast._t = setTimeout(() => (t.hidden = true), 1600);
+}
+function copy(text, btn) {
+  const done = () => toast("검색어를 복사했습니다: " + text);
+  try {
+    navigator.clipboard.writeText(text).then(done, () => { selectText(btn); toast("검색어를 선택했습니다. 복사해서 쓰세요."); });
+  } catch (_) { selectText(btn); }
+}
+function selectText(node) { const r = document.createRange(); r.selectNodeContents(node); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+
+function render() {
+  const root = document.getElementById("stages");
+  root.replaceChildren();
+  for (const st of STAGES) {
+    const sec = el("div", { class: "items" });
+    root.append(el("h3", { style: "font-size:17px;margin:18px 0 0" }, el("span", { class: "eyebrow" }, st.step + "  "), st.title));
+    root.append(el("p", { class: "lead", style: "font-size:14px;margin:2px 0 8px" }, st.lead));
+    for (const it of st.items) {
+      const on = !!state.sel[it.id];
+      const [bc, bt] = BADGE[it.where];
+      const buy = el("div", { class: "buy" });
+      if (it.kw && (it.where === "ali" || it.where === "official")) {
+        buy.append(el("a", { href: ali(it.kw), target: "_blank", rel: "noopener" }, "알리에서 검색 ↗"));
+        const kwb = el("button", { type: "button", class: "kw", title: "검색어 복사" }, it.kw);
+        kwb.addEventListener("click", () => copy(it.kw, kwb));
+        buy.append(kwb);
+      }
+      for (const [label, href] of it.links || []) buy.append(el("a", { href, target: "_blank", rel: "noopener" }, label + " ↗"));
+      if (it.where === "kr" && !it.links) buy.append(el("span", { class: "small" }, "쿠팡·네이버 등 국내 쇼핑몰"));
+
+      const cb = el("input", { type: "checkbox", id: "cb-" + it.id, "aria-label": it.name + " 포함" });
+      cb.checked = on;
+      cb.addEventListener("change", () => { state.sel[it.id] = cb.checked; save(); render(); });
+      const q = el("input", { type: "number", min: "1", max: "9", id: "q-" + it.id, "aria-label": it.name + " 수량" });
+      q.value = state.qty[it.id] || it.qty;
+      q.addEventListener("change", () => { state.qty[it.id] = Math.max(1, Math.min(9, parseInt(q.value) || 1)); save(); render(); });
+
+      const unit = unitUsd(it);
+      sec.append(el("article", { class: "item" + (on ? "" : " off") },
+        cb,
+        el("div", { style: "min-width:0" },
+          el("h3", {}, it.name, el("span", { class: "badge " + bc }, bt)),
+          el("p", { class: "spec" }, it.spec),
+          it.note ? el("p", { class: "note" }, it.note) : null,
+          buy),
+        el("div", { class: "price" },
+          el("span", { class: "usd" }, priceText(it)),
+          el("span", { class: it.verified ? "tag-ok" : "tag-est" }, it.verified ? "확인가" : "추정"),
+          el("span", { class: "krw" }, "≈ " + won(unit * state.fx) + " /개"),
+          el("label", { class: "qty", for: "q-" + it.id }, "수량", q))
+      ));
+    }
+    root.append(sec);
+  }
+  document.querySelectorAll(".tiers button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.tier === state.tier)));
+  summarize();
+}
+
+function summarize() {
+  let ali = 0, kr = 0, other = 0, lo = 0, hi = 0, n = 0;
+  for (const it of ALL) {
+    if (!state.sel[it.id]) continue;
+    const q = state.qty[it.id] || it.qty;
+    const mid = unitUsd(it) * q;
+    const range = it.usd ? it.usd : it.krw.map((v) => v / state.fx);
+    lo += range[0] * q; hi += range[1] * q; n += q;
+    if (it.where === "ali" || it.where === "official") ali += mid; else if (it.where === "kr") kr += mid; else other += mid;
+  }
+  const fx = state.fx;
+  document.getElementById("sumTotal").textContent = won((ali + kr + other) * fx);
+  document.getElementById("sumRange").textContent = "범위 " + won(lo * fx) + " – " + won(hi * fx);
+  document.getElementById("sumAli").textContent = usd(ali) + " · " + won(ali * fx);
+  document.getElementById("sumKr").textContent = won(kr * fx);
+  document.getElementById("sumOther").textContent = other ? usd(other) + " · " + won(other * fx) : "—";
+  document.getElementById("sumCount").textContent = n + "개";
+  const a = document.getElementById("dutyAlert");
+  if (ali > 150) {
+    const orders = Math.ceil(ali / 140);
+    a.className = "alert";
+    a.textContent = "알리 주문이 약 " + usd(ali) + "로 중국발 면세한도 150달러를 넘습니다. 결제일을 나눠 " + orders + "회 이상으로 주문하세요.";
+  } else {
+    a.className = "alert ok";
+    a.textContent = "알리 주문이 150달러 이하라 한 번에 주문해도 면세 범위입니다.";
+  }
+}
+
+document.querySelectorAll(".tiers button").forEach((b) => b.addEventListener("click", () => { applyTier(b.dataset.tier); save(); render(); }));
+const fxIn = document.getElementById("fx");
+fxIn.value = state.fx;
+fxIn.addEventListener("input", () => { const v = parseFloat(fxIn.value); if (v >= 800 && v <= 3000) { state.fx = v; save(); render(); } });
+render();
+</script>
