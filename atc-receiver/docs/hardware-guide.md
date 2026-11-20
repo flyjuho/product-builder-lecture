@@ -3,6 +3,8 @@
 > 조사 시점: 2026년 11월. 가격은 판매처 페이지 스냅샷 기준이며 수시로 바뀝니다. 원화 환산은 **1 USD ≈ 1,400원** 가정의 대략값입니다.
 > **(추정)** 표시는 판매 페이지에서 가격을 확인하지 못해 일반 시세로 적은 값입니다.
 
+> **SDR 단종 안내 (2026-11):** RTL-SDR Blog **V4는 2026년 5월 단종**(R828D 튜너 생산 종료), **V4L은 재고 한정**입니다. 제조사는 **V3(R860 튜너)를 계속 생산**한다고 밝혀, 이 문서는 V3 기준으로 바꿨습니다. 남은 V4 재고를 구하면 그대로 써도 됩니다. ([공지](https://www.rtl-sdr.com/rtl-sdr-blog-v4-end-of-line/))
+
 ---
 
 ## 0. 최종 목표 구성 (신호 흐름)
@@ -41,12 +43,12 @@
 | 전원 | Raspberry Pi 공식 27W USB-C PD 전원 | 약 2만원 (추정) | 위 국내 판매처 |
 | 쿨러/케이스 | 공식 Active Cooler + 공식 케이스 | 약 1.5~2만원 (추정) | 위 국내 판매처 |
 | 저장장치 | microSD 32–64GB A2 (Samsung PRO Plus, SanDisk Extreme) | 1~2만원 (추정) | 쿠팡/네이버 |
-| SDR | **RTL-SDR Blog V4** (안테나 키트 포함 번들 권장) | $39.95–44.95 (번들) / 동글 $34.95–39.95 | [공식 스토어 rtl-sdr.com](https://www.rtl-sdr.com/), [공식 eBay](https://www.ebay.com/str/rtlsdrblog) |
+| SDR | **RTL-SDR Blog V3 (R860)** | 동글 약 $34.95 (공식 스토어) | [공식 스토어 rtl-sdr.com](https://www.rtl-sdr.com/), [공식 eBay](https://www.ebay.com/str/rtlsdrblog) |
 
-- V4 번들의 기본 다이폴로 창가에서 ATC·ADS-B를 각각 시험해 봅니다(1대로 번갈아).
+- V3에 짧은 기본 안테나(또는 번들 다이폴)를 달아 창가에서 ATC·ADS-B를 각각 시험해 봅니다(1대로 번갈아).
 - **1단계 예상 비용: 약 28~30만원**
 
-> **짝퉁 주의**: 오픈마켓/해외 잡화몰(Fruugo 등)에 "for RTL SDR V4", "compatible" 등의 이름으로 올라온 상품은 정품이 아닐 수 있고 가격도 정품보다 비쌉니다(₩99,690~₩140,090 사례). **공식 스토어 또는 공식 eBay/AliExpress 공식점**에서 사세요.
+> **짝퉁 주의**: 오픈마켓/해외 잡화몰(Fruugo 등)에 "for RTL SDR V3", "compatible" 등의 이름으로 올라온 상품은 정품이 아닐 수 있고 가격도 정품보다 비쌉니다(₩99,690~₩140,090 사례). **공식 스토어 또는 공식 eBay/AliExpress 공식점**에서 사세요.
 
 ---
 
@@ -54,13 +56,13 @@
 
 | 역할 | 표준 추천 | 고급(성능 우선) | 가격 | 비고 |
 |---|---|---|---|---|
-| ADS-B / Mode S | RTL-SDR Blog V4 + **1090 필터 프리앰프** | **Airspy Mini** + 1090 필터 | V4 $35–40 / Airspy Mini $99 (세일 시 $79–84) | Airspy는 `airspy_adsb` 디코더로 RTL 대비 수신 메시지·거리가 확실히 좋음 |
-| ATC 채널 1 | RTL-SDR Blog V4 | Airspy Mini | 동일 | V4는 1 PPM TCXO라 주파수 보정 거의 불필요 |
-| ATC 채널 2 | RTL-SDR Blog V4 | RTL-SDR Blog V4 | $35–40 | 채널 늘릴 때마다 1대씩 추가 |
+| ADS-B / Mode S | RTL-SDR Blog V3 + **1090 필터 프리앰프** | **Airspy Mini** + 1090 필터 | V3 $35–40 / Airspy Mini $99 (세일 시 $79–84) | Airspy는 `airspy_adsb` 디코더로 RTL 대비 수신 메시지·거리가 확실히 좋음 |
+| ATC 채널 1 | RTL-SDR Blog V3 | Airspy Mini | 동일 | V3도 1 PPM TCXO라 주파수 보정 거의 불필요 |
+| ATC 채널 2 | RTL-SDR Blog V3 | RTL-SDR Blog V3 | $35–40 | 채널 늘릴 때마다 1대씩 추가 |
 
 - **Airspy R2**($169, 세일 시 약 $135–144)는 대역폭 10 MHz가 장점이지만, 한 동글로 한 채널씩 듣는 이 시스템에선 Mini로 충분합니다. ([FlightAware 포럼 의견](https://discussions.flightaware.com/t/is-an-airspy-r2-worth-70-more-than-a-mini/94202))
 - **FlightAware Pro Stick Plus**(1090 필터+LNA 내장 동글, 영국 £52.50)는 전용 1090 안테나에선 좋지만, **디스콘 같은 광대역 안테나에선 대역 외 신호로 포화되어 성능이 나빴다**는 리뷰가 있습니다. 단일 디스콘 구성에는 비추천. ([리뷰](https://www.rtl-sdr.com/flightaware-prostick-vs-flightaware-prostick-plus-review/))
-- **2단계 예상 비용**: 표준(V4 ×2 추가) 약 11만원 / 고급(Airspy Mini ×2 + V4 ×1) 약 33만원 + 배송
+- **2단계 예상 비용**: 표준(V3 ×2 추가) 약 11만원 / 고급(Airspy Mini ×2 + V3 ×1) 약 33만원 + 배송
 
 **동글 시리얼 기록**: 새 동글을 하나씩 꽂고 `scripts/set-sdr-serial.sh 1090|AIR1|AIR2` 실행 (README 3장).
 
@@ -130,8 +132,8 @@
 
 | 구성 | 내용 | 예상 총액 |
 |---|---|---|
-| **입문** | Pi 5 + V4 ×3 + 기본 다이폴/소형 디스콘(실내·창가) + FM 노치 + 유전원 허브 | **약 55~65만원** |
-| **권장 (이 문서의 표준)** | Pi 5 + V4 ×3 + D-130NJ + FM노치 + 광대역 LNA + 바이어스-T + 4분배기 + 1090 프리앰프 + 에어밴드 BPF ×2 + LMR-400/5D-FB + 낙뢰보호 + 허브/SSD | **약 100~120만원** |
+| **입문** | Pi 5 + V3 ×3 + 기본 다이폴/소형 디스콘(실내·창가) + FM 노치 + 유전원 허브 | **약 55~65만원** |
+| **권장 (이 문서의 표준)** | Pi 5 + V3 ×3 + D-130NJ + FM노치 + 광대역 LNA + 바이어스-T + 4분배기 + 1090 프리앰프 + 에어밴드 BPF ×2 + LMR-400/5D-FB + 낙뢰보호 + 허브/SSD | **약 100~120만원** |
 | **고급** | 권장 + Airspy Mini ×2 (ADS-B·ATC1) + 8D-FB/LMR-400 + UPS + LTE | **약 140~170만원** |
 
 ---
@@ -140,7 +142,7 @@
 
 1. **국내 구매**: 라즈베리파이·전원·케이스·SD·USB 허브 — 디바이스마트, 엘레파츠, 아이씨뱅큐, element14 KR, RS코리아, 쿠팡/네이버.
 2. **해외 공식 구매**
-   - RTL-SDR Blog(V4, FM 노치, LNA): [rtl-sdr.com 공식 스토어](https://www.rtl-sdr.com/) 또는 [공식 eBay](https://www.ebay.com/str/rtlsdrblog) — 대부분 국가 무료배송.
+   - RTL-SDR Blog(V3, FM 노치, LNA): [rtl-sdr.com 공식 스토어](https://www.rtl-sdr.com/) 또는 [공식 eBay](https://www.ebay.com/str/rtlsdrblog) — 대부분 국가 무료배송.
    - Airspy: [airspy.com](https://airspy.com/airspy-mini/)의 공식 리셀러 목록에서 구매. 매년 **여름(6월 말–7월 초) 20%**, **블랙프라이데이 15%** 세일이 있어 이때가 저렴합니다. ([2026 여름 세일](https://www.rtl-sdr.com/airspy-2026-summer-sale-20-off-all-airspy-products/))
    - GPIO Labs 필터/LNA: [Tindie](https://www.tindie.com/products/gpio/airband-bandpass-filter-118-138-mhz) — 국제배송 가능 여부를 상품 페이지에서 확인.
    - Uputronics 1090 프리앰프: [The Pi Hut(영국)](https://thepihut.com/products/ads-b-1090mhz-filtered-preamplifier).
@@ -155,15 +157,15 @@
 
 ## 7. 단계별 체크리스트
 
-- [ ] **1단계**: Pi 5 + V4 1대로 `install.sh` 설치, 창가 다이폴로 121.5 MHz / tar1090 지도 확인
-- [ ] **2단계**: V4(또는 Airspy) 추가, 시리얼 `1090`/`AIR1`/`AIR2` 기록, `rtl_test -t`로 3대 인식 확인
+- [ ] **1단계**: Pi 5 + V3 1대로 `install.sh` 설치, 창가 다이폴로 121.5 MHz / tar1090 지도 확인
+- [ ] **2단계**: V3(또는 Airspy) 추가, 시리얼 `1090`/`AIR1`/`AIR2` 기록, `rtl_test -t`로 3대 인식 확인
 - [ ] **3단계**: D-130NJ 설치 → 낙뢰보호 → FM 노치 → LNA(방수함) → 동축 → 바이어스-T → 4분배 → 분기별 필터
   - 설치 후 비교: LNA 전원 ON/OFF 상태에서 tar1090의 메시지 수·최대 거리, ATC 잡음 수준 확인
   - 포화 증상(잡음 증가, 유령 신호) → SDR 게인을 30 dB 이하로 낮춤
 - [ ] **4단계**: 유전원 허브, SSD, UPS, Tailscale 접속 확인, 재부팅 후 자동 복구 확인
 
 ## 참고 출처
-- RTL-SDR Blog V4: [공식 eBay 스토어](https://www.ebay.com/str/rtlsdrblog), [V4 출시 공지](https://www.rtl-sdr.com/rtl-sdr-blog-v4-dongle-initial-release/), [CNX Software](https://www.cnx-software.com/2023/08/17/rtl-sdr-blog-v4-dongle-launched-with-rafeal-r828d-tuner-chip/)
+- RTL-SDR Blog V3: [공식 eBay 스토어](https://www.ebay.com/str/rtlsdrblog), [V4 단종 공지](https://www.rtl-sdr.com/rtl-sdr-blog-v4-end-of-line/), [Hackster.io 보도](https://www.hackster.io/news/rtl-sdr-com-announces-the-end-of-the-line-for-its-popular-rtl-sdr-blog-v4-software-defined-radio-76f628f18e0d)
 - Airspy: [Airspy Mini](https://airspy.com/airspy-mini/), [Airspy R2](https://airspy.com/airspy-r2/), [2026 여름 세일](https://www.rtl-sdr.com/airspy-2026-summer-sale-20-off-all-airspy-products/), [Airspy Mini 리뷰](https://www.rtl-sdr.com/review-airspy-mini/)
 - FlightAware Pro Stick Plus: [The Pi Hut](https://thepihut.com/products/flightaware-pro-stick-plus-usb-sdr-ads-b-receiver/), [Pro Stick vs Plus 리뷰](https://www.rtl-sdr.com/flightaware-prostick-vs-flightaware-prostick-plus-review/)
 - Diamond D-130J: [DX Engineering](https://www.dxengineering.com/parts/dmn-d130j), [WiMo](https://www.wimo.com/fr/diamond-d-130j-discone-antenne), [ScannerMaster D130NJ](https://scannermaster.com/D130NJ_Diamond_Super_Discone_Antenna_p/48-541857.htm), [제조사 사양](https://diamond-ant.co.jp/english/amateur/antenna/ante_6dis.html)
