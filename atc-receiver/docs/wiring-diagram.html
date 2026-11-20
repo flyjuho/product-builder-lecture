@@ -131,7 +131,7 @@ code { font-family: var(--font-mono); font-size: 13px; background: var(--zone); 
     <div class="frame">
       <svg viewBox="0 0 1120 760" role="img" aria-labelledby="d1t d1d">
         <title id="d1t">전체 결선도</title>
-        <desc id="d1d">디스콘 안테나에서 낙뢰보호기, FM 노치, 광대역 LNA를 거쳐 8D-FB 20m 케이블로 실내 바이어스-T, 4분배기에 연결되고, 분배기 출력이 ADS-B 필터 LNA와 에어밴드 필터 두 개를 거쳐 RTL-SDR V4 세 대로 들어가며, USB 허브를 통해 라즈베리파이 5에 연결된다.</desc>
+        <desc id="d1d">디스콘 안테나에서 낙뢰보호기, FM 노치, 광대역 LNA를 거쳐 8D-FB 20m 케이블로 실내 바이어스-T, 4분배기에 연결되고, 분배기 출력이 1090MHz 필터와 에어밴드 필터 두 개를 거쳐 RTL-SDR V4 세 대로 들어가며, USB 허브를 통해 라즈베리파이 5에 연결된다.</desc>
 
         <!-- zones -->
         <rect class="z" x="10" y="10" width="1100" height="250" rx="6"/>
@@ -210,8 +210,8 @@ code { font-family: var(--font-mono); font-size: 13px; background: var(--zone); 
 
         <!-- ⑨ ADS-B -->
         <rect class="bx" x="55" y="490" width="190" height="60" rx="3"/>
-        <text class="t" x="67" y="514">⑨ ADS-B 필터 LNA</text>
-        <text class="s" x="67" y="534">1090MHz · 바이어스-T 급전</text>
+        <text class="t" x="67" y="514">⑨ 1090MHz SAW 필터</text>
+        <text class="s" x="67" y="534">패시브 · 전원 불필요</text>
         <!-- ⑩ BPF -->
         <rect class="bx" x="295" y="490" width="190" height="60" rx="3"/>
         <text class="t" x="307" y="514">⑩ 에어밴드 필터</text>
@@ -226,8 +226,7 @@ code { font-family: var(--font-mono); font-size: 13px; background: var(--zone); 
 
         <!-- ⑫ SDRs -->
         <path class="rf" d="M150 550 V580 M390 550 V580 M630 550 V580"/>
-        <path class="dc" d="M184 580 V550"/>
-        <text class="dcl" x="192" y="570">DC ON</text>
+        
         <rect class="bx k" x="55" y="580" width="190" height="52" rx="3"/>
         <text class="t" x="67" y="603">⑫ RTL-SDR V3</text>
         <text class="sm" x="67" y="621">시리얼 1090</text>
@@ -273,7 +272,7 @@ code { font-family: var(--font-mono); font-size: 13px; background: var(--zone); 
           <tr><td class="n">⑥</td><td>메인 동축</td><td>8D-FB 20m, N(M)–N(M) 국내 주문제작</td><td>실외와 실내 연결</td></tr>
           <tr><td class="n">⑦</td><td>바이어스-T 인젝터</td><td>USB 전원형, 10MHz–6GHz</td><td>동축으로 LNA에 5V 공급, 실내 쪽 DC 차단</td></tr>
           <tr><td class="n">⑧</td><td>4분배기</td><td>5–2400MHz (1090 포함 필수)</td><td>신호를 SDR 여러 대로 나눔</td></tr>
-          <tr><td class="n">⑨</td><td>ADS-B 필터 LNA</td><td>RTL-SDR Blog ADS-B Triple Filtered LNA</td><td>1090MHz만 통과 + 추가 증폭</td></tr>
+          <tr><td class="n">⑨</td><td>1090MHz 필터</td><td>FlightAware 1090 MHz ADS-B Bandpass Filter (1090 only 버전)</td><td>1090MHz만 통과, 전원 불필요</td></tr>
           <tr><td class="n">⑩</td><td>에어밴드 필터 ×2</td><td>118–137(138)MHz 대역통과</td><td>ATC 대역만 통과</td></tr>
           <tr><td class="n">⑪</td><td>50Ω 더미로드</td><td>SMA 종단기</td><td>빈 포트를 막아 분배 균형 유지</td></tr>
           <tr><td class="n">⑫</td><td>SDR ×3</td><td>RTL-SDR Blog V3 R860 (시리얼 1090 / AIR1 / AIR2) · V4 재고가 있으면 그대로 사용 가능</td><td>수신과 디지털 변환</td></tr>
@@ -369,7 +368,7 @@ code { font-family: var(--font-mono); font-size: 13px; background: var(--zone); 
         <tbody id="lvlBody"></tbody>
       </table>
     </div>
-    <p class="foot">SDR 입력은 안테나 단자보다 약 8–10dB 큰 신호를 받습니다. 그래서 SDR 게인은 30–40dB에서 시작하고, 잡음이 늘거나 없는 신호가 보이면 낮춥니다. ADS-B 분기는 ⑨의 이득이 더해지므로 SDR 게인을 더 낮게 시작해도 됩니다.</p>
+    <p class="foot">SDR 입력은 안테나 단자보다 약 8–10dB 큰 신호를 받습니다. 그래서 SDR 게인은 30–40dB에서 시작하고, 잡음이 늘거나 없는 신호가 보이면 낮춥니다. ADS-B 분기는 ⑨ 필터 손실을 빼도 안테나 단자보다 약 5.7dB 큰 신호가 들어갑니다.</p>
   </section>
 
   <!-- 전원·주의 -->
@@ -383,8 +382,8 @@ code { font-family: var(--font-mono); font-size: 13px; background: var(--zone); 
         <li><code>rtl_test -t</code>로 SDR 3대(1090 / AIR1 / AIR2)가 보이는지 확인합니다.</li>
       </ul></div>
       <div class="card"><h3>바이어스-T 켜고 끄기</h3><ul>
-        <li><b>1090 동글만 ON</b>: ⑨ ADS-B 필터 LNA 전원용입니다. readsb 옵션 <code>--enable-biastee</code> 또는 <code>rtl_biast -b 1</code>을 씁니다.</li>
-        <li><b>AIR1·AIR2는 OFF</b>(기본값). 에어밴드 필터 쪽으로 DC를 보낼 이유가 없습니다.</li>
+        <li><b>SDR 3대 모두 OFF</b>(기본값). ⑨는 패시브 필터라 전원이 필요 없습니다.</li>
+        <li>나중에 전원이 필요한 필터 LNA로 바꾸면 그 동글만 readsb 옵션 <code>--enable-biastee</code>로 켭니다.</li>
         <li>⑤ 광대역 LNA는 ⑦ 인젝터가 전원을 넣으므로 동글 바이어스-T와 상관없습니다.</li>
       </ul></div>
       <div class="card warn"><h3>망가뜨리기 쉬운 실수</h3><ul>
@@ -407,7 +406,7 @@ const STAGES = [
   ["⑥ 8D-FB 20m", -3.6, -1.1],
   ["⑦ 바이어스-T", -0.5, -0.3],
   ["⑧ 4분배기", -7, -7],
-  ["⑩ 에어밴드 필터", null, -1.2],
+  ["⑨ 1090 필터 / ⑩ 에어밴드 필터", -2.5, -1.2],
 ];
 const MIN = -5, MAX = 22, span = MAX - MIN;
 const pos = (v) => ((v - MIN) / span) * 100;
