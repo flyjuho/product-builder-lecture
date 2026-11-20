@@ -171,7 +171,7 @@ code { font-family: var(--font-mono); font-size: 13px; background: var(--zone); 
 
         <!-- ⑤ LNA -->
         <rect class="bx k" x="630" y="128" width="172" height="84" rx="3"/>
-        <text class="t" x="642" y="152">⑤ 광대역 LNA V2</text>
+        <text class="t" x="642" y="152">⑤ 광대역 LNA</text>
         <text class="s" x="642" y="172">+20dB · NF 1dB 미만</text>
         <text class="s" x="642" y="192">전원: 출력단 DC 3–5V</text>
         <path class="rf" d="M802 170 H1040 V330"/>
@@ -268,8 +268,8 @@ code { font-family: var(--font-mono); font-size: 13px; background: var(--zone); 
           <tr><td class="n">①</td><td>디스콘 안테나</td><td>알리 25–1300MHz 디스콘 / Diamond D-130NJ</td><td>모든 대역을 안테나 하나로 수신</td></tr>
           <tr><td class="n">②</td><td>짧은 점퍼</td><td>8D-FB 또는 LMR-400, N(M)–N(M) 0.5–1m</td><td>안테나와 낙뢰보호기 연결</td></tr>
           <tr><td class="n">③</td><td>낙뢰보호기</td><td>N형, <b>DC 패스</b> 타입</td><td>유도뢰 서지를 접지로 흘려보냄</td></tr>
-          <tr><td class="n">④</td><td>FM 노치 필터</td><td>RTL-SDR Blog Broadcast FM Band-Stop</td><td>FM 방송이 LNA를 포화시키지 않게 차단</td></tr>
-          <tr><td class="n">⑤</td><td>광대역 LNA</td><td>RTL-SDR Blog Wideband LNA V2</td><td>케이블·분배 손실 전에 신호 증폭</td></tr>
+          <tr><td class="n">④</td><td>FM 노치 필터</td><td>GPIO Labs FM 노치+LNA 일체형(④⑤ 한 장) / 에어밴드 최적화 FM 노치, Nooelec Flamingo FM v1</td><td>FM 방송이 LNA를 포화시키지 않게 차단</td></tr>
+          <tr><td class="n">⑤</td><td>광대역 LNA</td><td>일체형을 쓰면 ④에 포함 / 단품은 Nooelec LaNA</td><td>케이블·분배 손실 전에 신호 증폭</td></tr>
           <tr><td class="n">⑥</td><td>메인 동축</td><td>8D-FB 20m, N(M)–N(M) 국내 주문제작</td><td>실외와 실내 연결</td></tr>
           <tr><td class="n">⑦</td><td>바이어스-T 인젝터</td><td>USB 전원형, 10MHz–6GHz</td><td>동축으로 LNA에 5V 공급, 실내 쪽 DC 차단</td></tr>
           <tr><td class="n">⑧</td><td>4분배기</td><td>5–2400MHz (1090 포함 필수)</td><td>신호를 SDR 여러 대로 나눔</td></tr>
@@ -346,7 +346,7 @@ code { font-family: var(--font-mono); font-size: 13px; background: var(--zone); 
         <tbody>
           <tr><td class="n">①→③</td><td class="c">안테나 N(F)</td><td>② 점퍼 N(M)–N(M)</td><td class="c">낙뢰보호기 N(F)</td></tr>
           <tr><td class="n">③→④</td><td class="c">낙뢰보호기 N(F)</td><td><span class="adp">N(M)–SMA(M) 어댑터</span></td><td class="c">FM 노치 SMA(F)</td></tr>
-          <tr><td class="n">④→⑤</td><td class="c">FM 노치 SMA</td><td><span class="adp">SMA(M)–SMA(M)</span> 노치에 동봉</td><td class="c">LNA 입력 SMA(F)</td></tr>
+          <tr><td class="n">④→⑤</td><td class="c">FM 노치 SMA</td><td><span class="adp">SMA(M)–SMA(M)</span> · 일체형이면 이 연결 없음</td><td class="c">LNA 입력 SMA(F)</td></tr>
           <tr><td class="n">⑤→⑥</td><td class="c">LNA 출력 SMA(F)</td><td><span class="adp">SMA(M)–N(F) 격벽 어댑터</span> 방수함 벽에 고정</td><td class="c">8D-FB N(M)</td></tr>
           <tr><td class="n">⑥→⑦</td><td class="c">8D-FB N(M)</td><td><span class="adp">N(F)–SMA(M) 어댑터</span></td><td class="c">바이어스-T RF+DC SMA(F)</td></tr>
           <tr><td class="n">⑦→⑧</td><td class="c">바이어스-T RF SMA(F)</td><td>SMA(M)–SMA(M) 점퍼 RG316 · 분배기가 F형이면 <span class="adp">F(M)–SMA(F)</span></td><td class="c">분배기 IN</td></tr>

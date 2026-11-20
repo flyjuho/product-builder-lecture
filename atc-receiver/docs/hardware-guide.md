@@ -83,8 +83,11 @@
 ### 3-2. 프런트엔드 (안테나 쪽, 방수함 안)
 | 품목 | 추천 | 가격 | 구매처 |
 |---|---|---|---|
-| FM 노치 필터 | **RTL-SDR Blog Broadcast FM Band-Stop** (88–108 MHz 차단, SMA) | $16.95 (공식) / $17.95 (eBay) | [rtl-sdr.com](https://www.rtl-sdr.com/product/rtl-sdr-blog-broadcast-fm-band-stop-filter/), [eBay](https://www.ebay.com/itm/Broadcast-FM-Band-Stop-Filter-88-108-MHz-FM-Trap-by-RTL-SDR-Blog/282265486654) |
-| 광대역 LNA | **RTL-SDR Blog Wideband LNA V2** (50 MHz–4 GHz, NF < 1 dB, 3–5 V 바이어스-T 급전) | $19.95 | [rtl-sdr.com](https://www.rtl-sdr.com/product/rtl-sdr-blog-wideband-lna-bias-tee-powered/) |
+| FM 노치 + LNA (권장) | **GPIO Labs FM Notch + LNA 일체형** (20 dB, 바이어스-T 급전) | Tindie 페이지 확인 | [Tindie](https://www.tindie.com/products/gpio/fm-notch-filter-with-low-noise-amplifier-lna-3-ghz/) |
+| FM 노치 단품 | GPIO Labs 에어밴드 최적화 FM 노치 / **Nooelec Flamingo FM v1** (v2는 항공대역 약 8 dB 감쇠라 비추천) | 페이지 확인 | [GPIO Labs](https://tindie.com/products/gpio/fm-notch-filter-88-108mhz-optimized-for-airband), [Amazon](https://www.amazon.com/Flamingo-FM-Broadcast-Bandstop-Applications/dp/B079CNCR8V) |
+| 광대역 LNA 단품 | **Nooelec LaNA** (20 MHz–4 GHz, 바이어스-T/USB/DC 전원) | 약 $38–63 (판매처별) | [Nooelec](https://www.nooelec.com/store/lana.html) |
+
+> RTL-SDR Blog FM 노치·광대역 LNA는 2026-11 현재 공식 스토어와 주요 마켓에서 품절이라 위 제품으로 바꿨습니다.
 | (대안) FM노치+LNA 일체형 | GPIO Labs FM Notch + LNA (20 dB, 바이어스-T) | Tindie 페이지 확인 | [Tindie](https://www.tindie.com/products/gpio/fm-notch-filter-with-low-noise-amplifier-lna-3-ghz/) |
 | 낙뢰보호기 | N형 동축 서지 어레스터 (DC 패스형 — LNA 급전 통과 필수) + 접지선 | 3~6만원 (추정) | 국내 무선용품점, 해외 DX Engineering 등 |
 | 방수함 | IP65 이상 ABS 정션박스 + 방수 케이블 글랜드 | 1~2만원 (추정) | 쿠팡/네이버 |
