@@ -1,0 +1,429 @@
+<title>ATC·ADS-B 수신국 배선 도면</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* Layout: 도면 시트처럼 — 큰 결선도가 주인공, 아래로 설치 단면도·커넥터표·레벨도. 장비 리스트 페이지와 같은 항공 차트 톤 */
+:root {
+  --paper: #f4f6f3;
+  --panel: #ffffff;
+  --zone: #e9eef0;
+  --ink: #13233b;
+  --muted: #56657a;
+  --rule: #c9d2d8;
+  --magenta: #a1286c;
+  --magenta-soft: #f6e6ef;
+  --blue: #1f5fa8;
+  --ground: #2f7d3e;
+  --warn: #a35a00;
+  --warn-soft: #fbf0df;
+  --font-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0e1622; --panel: #152131; --zone: #111c2a; --ink: #e4eaf2; --muted: #9aa9bb; --rule: #2c3d54;
+    --magenta: #e17ab2; --magenta-soft: #3a1f30; --blue: #7fb2ee; --ground: #6fcf86;
+    --warn: #f0b35c; --warn-soft: #3a2c16; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0e1622; --panel: #152131; --zone: #111c2a; --ink: #e4eaf2; --muted: #9aa9bb; --rule: #2c3d54;
+  --magenta: #e17ab2; --magenta-soft: #3a1f30; --blue: #7fb2ee; --ground: #6fcf86;
+  --warn: #f0b35c; --warn-soft: #3a2c16; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--paper); color: var(--ink); font-family: var(--font-body);
+  font-size: 15px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 56px;
+}
+a { color: var(--blue); }
+.wrap { max-width: 1160px; margin: 0 auto; display: grid; gap: 44px; }
+h1, h2, h3 { margin: 0; line-height: 1.25; text-wrap: balance; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--magenta); }
+
+.top { padding-block: 36px 18px; border-bottom: 2px solid var(--ink); display: grid; gap: 10px; }
+.top h1 { font-size: clamp(26px, 4vw, 36px); }
+.top p { margin: 0; color: var(--muted); max-width: 72ch; }
+.sheet { display: flex; flex-wrap: wrap; gap: 4px 20px; font-family: var(--font-mono); font-size: 12.5px; color: var(--muted); }
+.sheet b { color: var(--ink); font-weight: 600; }
+
+section { display: grid; gap: 14px; min-width: 0; }
+section > h2 { font-size: 21px; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.dwg { font-family: var(--font-mono); font-size: 12.5px; color: var(--magenta); border: 1px solid var(--magenta); border-radius: 3px; padding: 0 6px; }
+.lead { margin: 0; color: var(--muted); max-width: 74ch; }
+
+.frame { background: var(--panel); border: 1.5px solid var(--ink); border-radius: 4px; overflow-x: auto; }
+.frame svg { display: block; width: 100%; min-width: 900px; height: auto; }
+.frame.narrow svg { min-width: 640px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 13.5px; color: var(--muted); align-items: center; }
+.legend i { display: inline-block; width: 30px; height: 0; vertical-align: middle; margin-right: 6px; border-top: 3px solid var(--ink); }
+.legend .l-dc { border-top: 2.5px dashed var(--magenta); }
+.legend .l-usb { border-top-color: var(--blue); }
+.legend .l-gnd { border-top-color: var(--ground); }
+
+/* SVG */
+.z { fill: var(--zone); stroke: var(--rule); stroke-width: 1; }
+.zl { fill: var(--muted); font: 600 12px var(--font-mono); letter-spacing: .08em; }
+.bx { fill: var(--panel); stroke: var(--ink); stroke-width: 1.5; }
+.bx.k { stroke: var(--magenta); stroke-width: 2; }
+.bx.d { fill: none; stroke: var(--ink); stroke-dasharray: 7 5; stroke-width: 1.2; }
+.t { fill: var(--ink); font: 600 13.5px var(--font-body); }
+.s { fill: var(--muted); font: 400 12px var(--font-body); }
+.sm { fill: var(--muted); font: 400 11.5px var(--font-body); }
+.dcl { fill: var(--magenta); font: 500 12px var(--font-body); }
+.gl { fill: var(--ground); font: 500 12px var(--font-body); }
+.rf { stroke: var(--ink); stroke-width: 2.5; fill: none; }
+.dc { stroke: var(--magenta); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.usb { stroke: var(--blue); stroke-width: 2.5; fill: none; }
+.gnd { stroke: var(--ground); stroke-width: 2.2; fill: none; }
+.ant { stroke: var(--ink); stroke-width: 2.2; fill: none; }
+.bld { fill: var(--zone); stroke: var(--ink); stroke-width: 1.5; }
+.win { fill: var(--panel); stroke: var(--ink); stroke-width: 1.2; }
+.earth { stroke: var(--muted); stroke-width: 1.5; fill: none; }
+
+/* tables */
+.tbl { overflow-x: auto; border: 1px solid var(--rule); border-radius: 4px; background: var(--panel); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-size: 12.5px; color: var(--muted); font-weight: 600; background: var(--zone); white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+td.n { font-family: var(--font-mono); color: var(--magenta); font-weight: 600; white-space: nowrap; }
+td.c { font-family: var(--font-mono); font-size: 13px; white-space: nowrap; }
+.adp { display: inline-block; font-family: var(--font-mono); font-size: 12.5px; background: var(--warn-soft); padding: 1px 6px; border-radius: 3px; }
+
+/* level chart */
+.lvl td.v { font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+.barcell { min-width: 220px; width: 40%; }
+.bar { position: relative; height: 22px; }
+.bar .zero { position: absolute; left: 18.5%; top: -4px; bottom: -4px; border-left: 1.5px solid var(--muted); }
+.bar span { position: absolute; height: 9px; border-radius: 2px; }
+.bar .b1 { top: 1px; background: var(--magenta); }
+.bar .b2 { top: 12px; background: var(--blue); }
+.key-1090 { color: var(--magenta); font-weight: 600; }
+.key-130 { color: var(--blue); font-weight: 600; }
+
+.cards { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.card { background: var(--panel); border: 1px solid var(--rule); border-radius: 4px; padding: 14px 16px; font-size: 14px; }
+.card h3 { font-size: 15px; margin-bottom: 6px; }
+.card ul { margin: 0; padding-left: 18px; display: grid; gap: 5px; }
+.card.warn { border-color: var(--warn); background: var(--warn-soft); }
+code { font-family: var(--font-mono); font-size: 13px; background: var(--zone); padding: 1px 5px; border-radius: 3px; }
+.foot { font-size: 13px; color: var(--muted); margin: 0; max-width: 80ch; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <span class="eyebrow">도면 · 안테나 1개 / SDR 3대 / Raspberry Pi 5</span>
+    <h1>ATC·ADS-B 수신국 배선 도면</h1>
+    <p>안테나에서 라즈베리파이까지 모든 연결을 번호로 표시했습니다. 도면의 번호(①–⑭)는 아래 부품표, 커넥터표와 같습니다. 케이블은 8D-FB 20m, LNA는 안테나 쪽 방수함에 두는 권장 구성 기준입니다.</p>
+    <div class="sheet"><span>DWG <b>01</b> 결선도</span><span>DWG <b>02</b> 실외 설치</span><span>DWG <b>03</b> 커넥터</span><span>DWG <b>04</b> 레벨도</span><span>기준 <b>2026-11</b></span></div>
+  </header>
+
+  <!-- DWG 01 -->
+  <section>
+    <h2><span class="dwg">DWG 01</span>전체 결선도</h2>
+    <p class="lead">검은 실선은 고주파 신호, 분홍 점선은 LNA 전원(DC 5V)입니다. 전원은 실내의 바이어스-T에서 넣어 동축 케이블 안쪽 도체를 타고 실외 LNA까지 올라갑니다.</p>
+    <div class="frame">
+      <svg viewBox="0 0 1120 760" role="img" aria-labelledby="d1t d1d">
+        <title id="d1t">전체 결선도</title>
+        <desc id="d1d">디스콘 안테나에서 낙뢰보호기, FM 노치, 광대역 LNA를 거쳐 8D-FB 20m 케이블로 실내 바이어스-T, 4분배기에 연결되고, 분배기 출력이 ADS-B 필터 LNA와 에어밴드 필터 두 개를 거쳐 RTL-SDR V4 세 대로 들어가며, USB 허브를 통해 라즈베리파이 5에 연결된다.</desc>
+
+        <!-- zones -->
+        <rect class="z" x="10" y="10" width="1100" height="250" rx="6"/>
+        <text class="zl" x="26" y="34">실외 · 마스트</text>
+        <rect class="z" x="10" y="310" width="1100" height="440" rx="6"/>
+        <text class="zl" x="26" y="334">실내</text>
+
+        <!-- ① antenna -->
+        <line class="ant" x1="56" y1="58" x2="104" y2="58"/>
+        <line class="ant" x1="80" y1="58" x2="80" y2="235"/>
+        <path class="ant" d="M80 64 L46 140 M80 64 L64 140 M80 64 L96 140 M80 64 L114 140"/>
+        <text class="t" x="98" y="200">① 디스콘 안테나</text>
+        <text class="s" x="98" y="217">25–1300MHz · N(F)</text>
+
+        <!-- ② jumper -->
+        <path class="rf" d="M80 170 H230"/>
+        <text class="sm" x="96" y="162">② 점퍼 N(M)–N(M)</text>
+
+        <!-- ③ arrester -->
+        <rect class="bx" x="230" y="140" width="142" height="60" rx="3"/>
+        <text class="t" x="242" y="164">③ 낙뢰보호기</text>
+        <text class="s" x="242" y="184">DC 패스 · N(F)–N(F)</text>
+        <path class="gnd" d="M300 200 V232"/>
+        <path class="gnd" d="M286 232 H314 M291 238 H309 M296 244 H304"/>
+        <text class="gl" x="290" y="242" text-anchor="end">접지선 → 건물 접지</text>
+
+        <!-- weatherproof box -->
+        <rect class="bx d" x="400" y="60" width="560" height="182" rx="4"/>
+        <text class="zl" x="414" y="82">IP65 방수함</text>
+        <path class="rf" d="M372 170 H430"/>
+
+        <!-- ④ FM notch -->
+        <rect class="bx" x="430" y="140" width="150" height="60" rx="3"/>
+        <text class="t" x="442" y="164">④ FM 노치</text>
+        <text class="s" x="442" y="184">88–108MHz 차단 · SMA</text>
+        <path class="rf" d="M580 170 H630"/>
+
+        <!-- ⑤ LNA -->
+        <rect class="bx k" x="630" y="128" width="172" height="84" rx="3"/>
+        <text class="t" x="642" y="152">⑤ 광대역 LNA V2</text>
+        <text class="s" x="642" y="172">+20dB · NF 1dB 미만</text>
+        <text class="s" x="642" y="192">전원: 출력단 DC 3–5V</text>
+        <path class="rf" d="M802 170 H1040 V330"/>
+        <text class="sm" x="814" y="160">SMA→N 격벽 어댑터</text>
+
+        <!-- DC path up to LNA -->
+        <path class="dc" d="M1054 340 V184 H802"/>
+        <text class="dcl" x="818" y="202">DC 5V ↑ (동축 중심도체)</text>
+
+        <!-- ⑥ cable label -->
+        <text class="t" x="1028" y="282" text-anchor="end">⑥ 8D-FB 20m · N(M)–N(M)</text>
+        <text class="sm" x="1028" y="299" text-anchor="end">1090MHz −3.6dB · 130MHz −1.1dB</text>
+
+        <!-- ⑦ bias-T -->
+        <rect class="bx k" x="880" y="330" width="210" height="76" rx="3"/>
+        <text class="t" x="892" y="354">⑦ 바이어스-T 인젝터</text>
+        <text class="s" x="892" y="374">RF+DC 포트 → 안테나 쪽</text>
+        <text class="s" x="892" y="393">RF 포트 → 분배기 쪽</text>
+        <path class="usb" d="M985 406 V432"/>
+        <rect class="bx" x="925" y="432" width="150" height="32" rx="3"/>
+        <text class="s" x="940" y="453">USB 5V 어댑터</text>
+
+        <!-- ⑧ splitter -->
+        <path class="rf" d="M880 368 H780"/>
+        <rect class="bx" x="560" y="336" width="220" height="70" rx="3"/>
+        <text class="t" x="572" y="360">⑧ 4분배기 5–2400MHz</text>
+        <text class="s" x="572" y="380">IN 1 · OUT 4 · 약 −7dB</text>
+        <text class="sm" x="572" y="398">DC 차단됨 (⑦이 막아 줌)</text>
+
+        <!-- fan-out -->
+        <path class="rf" d="M600 406 V428 H150 V490"/>
+        <path class="rf" d="M640 406 V440 H390 V490"/>
+        <path class="rf" d="M680 406 V452 H630 V490"/>
+        <path class="rf" d="M720 406 V464 H870 V490"/>
+        <text class="sm" x="196" y="422">SMA 점퍼 RG316</text>
+
+        <!-- ⑨ ADS-B -->
+        <rect class="bx" x="55" y="490" width="190" height="60" rx="3"/>
+        <text class="t" x="67" y="514">⑨ ADS-B 필터 LNA</text>
+        <text class="s" x="67" y="534">1090MHz · 바이어스-T 급전</text>
+        <!-- ⑩ BPF -->
+        <rect class="bx" x="295" y="490" width="190" height="60" rx="3"/>
+        <text class="t" x="307" y="514">⑩ 에어밴드 필터</text>
+        <text class="s" x="307" y="534">118–137MHz 통과</text>
+        <rect class="bx" x="535" y="490" width="190" height="60" rx="3"/>
+        <text class="t" x="547" y="514">⑩ 에어밴드 필터</text>
+        <text class="s" x="547" y="534">118–137MHz 통과</text>
+        <!-- ⑪ dummy -->
+        <rect class="bx" x="775" y="490" width="190" height="60" rx="3"/>
+        <text class="t" x="787" y="514">⑪ 50Ω 더미로드</text>
+        <text class="s" x="787" y="534">예비 포트 · UHF용 SDR 자리</text>
+
+        <!-- ⑫ SDRs -->
+        <path class="rf" d="M150 550 V580 M390 550 V580 M630 550 V580"/>
+        <path class="dc" d="M184 580 V550"/>
+        <text class="dcl" x="192" y="570">DC ON</text>
+        <rect class="bx k" x="55" y="580" width="190" height="52" rx="3"/>
+        <text class="t" x="67" y="603">⑫ RTL-SDR V4</text>
+        <text class="sm" x="67" y="621">시리얼 1090</text>
+        <rect class="bx k" x="295" y="580" width="190" height="52" rx="3"/>
+        <text class="t" x="307" y="603">⑫ RTL-SDR V4</text>
+        <text class="sm" x="307" y="621">시리얼 AIR1</text>
+        <rect class="bx k" x="535" y="580" width="190" height="52" rx="3"/>
+        <text class="t" x="547" y="603">⑫ RTL-SDR V4</text>
+        <text class="sm" x="547" y="621">시리얼 AIR2</text>
+
+        <!-- ⑬ hub, ⑭ pi -->
+        <path class="usb" d="M150 632 V662 M390 632 V662 M630 632 V662"/>
+        <rect class="bx" x="55" y="662" width="680" height="48" rx="3"/>
+        <text class="t" x="395" y="684" text-anchor="middle">⑬ 유전원 USB 3.0 허브</text>
+        <text class="s" x="395" y="701" text-anchor="middle">전용 어댑터 5V 3A 이상 · 동글 사이에 짧은 USB 연장선</text>
+        <path class="usb" d="M735 686 H800"/>
+        <rect class="bx k" x="800" y="644" width="290" height="84" rx="3"/>
+        <text class="t" x="814" y="668">⑭ Raspberry Pi 5</text>
+        <text class="s" x="814" y="688">readsb · tar1090 · atcctl</text>
+        <text class="s" x="814" y="707">Wi-Fi → Tailscale → 원격 접속</text>
+      </svg>
+    </div>
+    <div class="legend">
+      <span><i></i>고주파 신호 (동축·SMA 점퍼)</span>
+      <span><i class="l-dc"></i>DC 전원 (바이어스-T)</span>
+      <span><i class="l-usb"></i>USB / 전원 어댑터</span>
+      <span><i class="l-gnd"></i>접지</span>
+    </div>
+  </section>
+
+  <!-- 부품표 -->
+  <section>
+    <h2><span class="dwg">BOM</span>도면 번호별 부품</h2>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>번호</th><th>부품</th><th>추천 제품</th><th>역할</th></tr></thead>
+        <tbody>
+          <tr><td class="n">①</td><td>디스콘 안테나</td><td>알리 25–1300MHz 디스콘 / Diamond D-130NJ</td><td>모든 대역을 안테나 하나로 수신</td></tr>
+          <tr><td class="n">②</td><td>짧은 점퍼</td><td>8D-FB 또는 LMR-400, N(M)–N(M) 0.5–1m</td><td>안테나와 낙뢰보호기 연결</td></tr>
+          <tr><td class="n">③</td><td>낙뢰보호기</td><td>N형, <b>DC 패스</b> 타입</td><td>유도뢰 서지를 접지로 흘려보냄</td></tr>
+          <tr><td class="n">④</td><td>FM 노치 필터</td><td>RTL-SDR Blog Broadcast FM Band-Stop</td><td>FM 방송이 LNA를 포화시키지 않게 차단</td></tr>
+          <tr><td class="n">⑤</td><td>광대역 LNA</td><td>RTL-SDR Blog Wideband LNA V2</td><td>케이블·분배 손실 전에 신호 증폭</td></tr>
+          <tr><td class="n">⑥</td><td>메인 동축</td><td>8D-FB 20m, N(M)–N(M) 국내 주문제작</td><td>실외와 실내 연결</td></tr>
+          <tr><td class="n">⑦</td><td>바이어스-T 인젝터</td><td>USB 전원형, 10MHz–6GHz</td><td>동축으로 LNA에 5V 공급, 실내 쪽 DC 차단</td></tr>
+          <tr><td class="n">⑧</td><td>4분배기</td><td>5–2400MHz (1090 포함 필수)</td><td>신호를 SDR 여러 대로 나눔</td></tr>
+          <tr><td class="n">⑨</td><td>ADS-B 필터 LNA</td><td>RTL-SDR Blog ADS-B Triple Filtered LNA</td><td>1090MHz만 통과 + 추가 증폭</td></tr>
+          <tr><td class="n">⑩</td><td>에어밴드 필터 ×2</td><td>118–137(138)MHz 대역통과</td><td>ATC 대역만 통과</td></tr>
+          <tr><td class="n">⑪</td><td>50Ω 더미로드</td><td>SMA 종단기</td><td>빈 포트를 막아 분배 균형 유지</td></tr>
+          <tr><td class="n">⑫</td><td>SDR ×3</td><td>RTL-SDR Blog V4 (시리얼 1090 / AIR1 / AIR2)</td><td>수신과 디지털 변환</td></tr>
+          <tr><td class="n">⑬</td><td>유전원 USB 허브</td><td>UGREEN / ORICO, 5V 3A 이상</td><td>동글 전원 안정화</td></tr>
+          <tr><td class="n">⑭</td><td>Raspberry Pi 5</td><td>8GB + 27W 전원</td><td>디코딩, 웹 제어, 원격 접속</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- DWG 02 -->
+  <section>
+    <h2><span class="dwg">DWG 02</span>실외 설치 단면도</h2>
+    <p class="lead">낙뢰보호기와 방수함은 마스트에 붙이고, 케이블은 창문 아래로 한 번 처지게(드립 루프) 한 뒤 들어오게 합니다. 접지선은 짧고 곧게 건물 접지로 보냅니다.</p>
+    <div class="frame narrow">
+      <svg viewBox="0 0 720 440" role="img" aria-labelledby="d2t d2d">
+        <title id="d2t">실외 설치 단면도</title>
+        <desc id="d2d">건물 옥상 마스트 위에 디스콘 안테나가 있고, 마스트에 낙뢰보호기와 방수함이 붙어 있다. 접지선은 마스트를 따라 내려와 건물 벽을 타고 접지로 연결된다. 동축 케이블은 옥상을 지나 벽을 타고 내려와 창문 아래에서 드립 루프를 만든 뒤 창문으로 들어가 실내 장비에 연결된다.</desc>
+
+        <line class="earth" x1="20" y1="400" x2="700" y2="400"/>
+        <rect class="bld" x="60" y="200" width="360" height="200"/>
+        <rect class="win" x="414" y="268" width="12" height="34"/>
+        <text class="zl" x="76" y="388">실내</text>
+
+        <!-- mast + antenna -->
+        <line class="ant" x1="300" y1="40" x2="300" y2="200"/>
+        <line class="ant" x1="275" y1="40" x2="325" y2="40"/>
+        <path class="ant" d="M300 46 L268 96 M300 46 L286 96 M300 46 L314 96 M300 46 L332 96"/>
+        <text class="t" x="344" y="46">① 디스콘 (약 1.7m)</text>
+        <text class="s" x="344" y="63">주변 지붕·나무보다 높게</text>
+
+        <!-- ② ③ -->
+        <path class="rf" d="M300 98 Q322 100 322 108"/>
+        <rect class="bx" x="306" y="108" width="44" height="16" rx="2"/>
+        <text class="s" x="358" y="121">③ 낙뢰보호기 (DC 패스)</text>
+        <!-- box -->
+        <path class="rf" d="M328 124 V136"/>
+        <rect class="bx k" x="306" y="136" width="50" height="38" rx="3"/>
+        <text class="s" x="364" y="153">④⑤ 방수함 (FM 노치 + LNA)</text>
+        <text class="sm" x="364" y="170">커넥터: 자기융착 → 전기테이프</text>
+
+        <!-- ⑥ cable route with drip loop -->
+        <path class="rf" d="M331 174 V198 H425 Q432 198 432 206 V318 Q432 334 446 334 Q460 334 460 318 V300 Q460 285 445 285 H395 V318 H380"/>
+        <text class="s" x="472" y="322">드립 루프</text>
+        <text class="sm" x="472" y="338">빗물이 창으로 타고 들지 않게</text>
+        <text class="s" x="472" y="262">⑥ 8D-FB 20m</text>
+        <text class="sm" x="472" y="278">창틀 통과: 플랫 케이블 또는 벽 관통</text>
+
+        <!-- indoor gear -->
+        <rect class="bx" x="140" y="296" width="240" height="48" rx="3"/>
+        <text class="t" x="152" y="317">⑦–⑭ 실내 장비</text>
+        <text class="s" x="152" y="335">바이어스-T → 분배기 → SDR → Pi</text>
+
+        <!-- ground -->
+        <path class="gnd" d="M306 116 H292 V200 H70 V404"/>
+        <path class="gnd" d="M56 404 H84 M61 410 H79 M66 416 H74"/>
+        <text class="gl" x="80" y="190">접지선 4mm² 이상 · 짧고 곧게</text>
+        <text class="gl" x="92" y="418">건물 접지 / 접지봉</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- DWG 03 -->
+  <section>
+    <h2><span class="dwg">DWG 03</span>연결부별 커넥터와 어댑터</h2>
+    <p class="lead">대부분의 연결 실수는 커넥터 규격 때문에 생깁니다. 노란 칸이 따로 준비해야 할 어댑터입니다. 커넥터 성별은 제품마다 다를 수 있으니 도착하면 하나씩 맞춰 보세요.</p>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>연결</th><th>앞 장비 쪽</th><th>필요한 어댑터·케이블</th><th>뒤 장비 쪽</th></tr></thead>
+        <tbody>
+          <tr><td class="n">①→③</td><td class="c">안테나 N(F)</td><td>② 점퍼 N(M)–N(M)</td><td class="c">낙뢰보호기 N(F)</td></tr>
+          <tr><td class="n">③→④</td><td class="c">낙뢰보호기 N(F)</td><td><span class="adp">N(M)–SMA(M) 어댑터</span></td><td class="c">FM 노치 SMA(F)</td></tr>
+          <tr><td class="n">④→⑤</td><td class="c">FM 노치 SMA</td><td><span class="adp">SMA(M)–SMA(M)</span> 노치에 동봉</td><td class="c">LNA 입력 SMA(F)</td></tr>
+          <tr><td class="n">⑤→⑥</td><td class="c">LNA 출력 SMA(F)</td><td><span class="adp">SMA(M)–N(F) 격벽 어댑터</span> 방수함 벽에 고정</td><td class="c">8D-FB N(M)</td></tr>
+          <tr><td class="n">⑥→⑦</td><td class="c">8D-FB N(M)</td><td><span class="adp">N(F)–SMA(M) 어댑터</span></td><td class="c">바이어스-T RF+DC SMA(F)</td></tr>
+          <tr><td class="n">⑦→⑧</td><td class="c">바이어스-T RF SMA(F)</td><td>SMA(M)–SMA(M) 점퍼 RG316 · 분배기가 F형이면 <span class="adp">F(M)–SMA(F)</span></td><td class="c">분배기 IN</td></tr>
+          <tr><td class="n">⑧→⑨⑩⑪</td><td class="c">분배기 OUT ×4</td><td>SMA(M)–SMA(M) 점퍼 RG316 ×3 + 더미로드</td><td class="c">필터 입력 SMA</td></tr>
+          <tr><td class="n">⑨⑩→⑫</td><td class="c">필터 출력 SMA</td><td>필터가 SMA(F)면 <span class="adp">SMA(M)–SMA(M)</span></td><td class="c">V4 안테나 단자 SMA(F)</td></tr>
+          <tr><td class="n">⑫→⑬</td><td class="c">V4 USB-A</td><td>짧은 USB 연장선 30cm (동글끼리 붙지 않게)</td><td class="c">허브 USB 3.0</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="foot"><b>SMA와 RP-SMA를 혼동하지 마세요.</b> RP-SMA는 Wi-Fi 안테나용으로 가운데 핀 배치가 반대라, 끼워져도 신호가 통하지 않습니다. 알리에서 어댑터를 살 때 상품명에 RP가 없는지 확인하세요.</p>
+  </section>
+
+  <!-- DWG 04 -->
+  <section>
+    <h2><span class="dwg">DWG 04</span>신호 레벨도</h2>
+    <p class="lead">안테나 단자 신호를 0dB로 놓고 각 단계를 지날 때 얼마나 커지고 줄어드는지 누적해서 보여줍니다. 일반적인 사양 기준의 추정값입니다. <span class="key-1090">■ 1090MHz (ADS-B)</span> <span class="key-130">■ 130MHz (ATC)</span></p>
+    <div class="tbl">
+      <table class="lvl">
+        <thead><tr><th>단계</th><th>1090MHz</th><th>누적</th><th>130MHz</th><th>누적</th><th class="barcell">누적 레벨 (−5 ~ +22dB)</th></tr></thead>
+        <tbody id="lvlBody"></tbody>
+      </table>
+    </div>
+    <p class="foot">SDR 입력은 안테나 단자보다 약 8–10dB 큰 신호를 받습니다. 그래서 SDR 게인은 30–40dB에서 시작하고, 잡음이 늘거나 없는 신호가 보이면 낮춥니다. ADS-B 분기는 ⑨의 이득이 더해지므로 SDR 게인을 더 낮게 시작해도 됩니다.</p>
+  </section>
+
+  <!-- 전원·주의 -->
+  <section>
+    <h2><span class="dwg">NOTE</span>전원 연결 순서와 주의사항</h2>
+    <div class="cards">
+      <div class="card"><h3>설치 순서</h3><ul>
+        <li>모든 RF 커넥터를 먼저 다 연결합니다.</li>
+        <li>⑦ 바이어스-T에 USB 5V를 꽂아 LNA 전원을 켭니다.</li>
+        <li>⑬ 허브 전원을 켜고 ⑭ Pi를 부팅합니다.</li>
+        <li><code>rtl_test -t</code>로 SDR 3대(1090 / AIR1 / AIR2)가 보이는지 확인합니다.</li>
+      </ul></div>
+      <div class="card"><h3>바이어스-T 켜고 끄기</h3><ul>
+        <li><b>1090 동글만 ON</b>: ⑨ ADS-B 필터 LNA 전원용입니다. readsb 옵션 <code>--enable-biastee</code> 또는 <code>rtl_biast -b 1</code>을 씁니다.</li>
+        <li><b>AIR1·AIR2는 OFF</b>(기본값). 에어밴드 필터 쪽으로 DC를 보낼 이유가 없습니다.</li>
+        <li>⑤ 광대역 LNA는 ⑦ 인젝터가 전원을 넣으므로 동글 바이어스-T와 상관없습니다.</li>
+      </ul></div>
+      <div class="card warn"><h3>망가뜨리기 쉬운 실수</h3><ul>
+        <li>⑦을 거꾸로 꽂으면 분배기와 SDR 쪽으로 DC가 들어갑니다. <b>RF+DC 포트가 안테나 쪽</b>입니다.</li>
+        <li>전원이 들어간 상태에서 동축을 뽑고 꽂지 마세요. 순간 단락으로 LNA가 상할 수 있습니다.</li>
+        <li>③이 DC 차단형이면 LNA에 전원이 안 갑니다. tar1090 메시지 수가 LNA 장착 전과 같다면 이것부터 의심하세요.</li>
+        <li>천둥번개가 칠 때는 동축을 실내 장비에서 분리해 두는 것이 가장 안전합니다.</li>
+      </ul></div>
+    </div>
+  </section>
+</div>
+
+<script>
+"use strict";
+// 단계별 이득(+)/손실(−), dB. 일반적인 사양 기준 추정값
+const STAGES = [
+  ["③ 낙뢰보호기", -0.2, -0.1],
+  ["④ FM 노치", -0.5, -0.5],
+  ["⑤ 광대역 LNA", 20, 20],
+  ["⑥ 8D-FB 20m", -3.6, -1.1],
+  ["⑦ 바이어스-T", -0.5, -0.3],
+  ["⑧ 4분배기", -7, -7],
+  ["⑩ 에어밴드 필터", null, -1.2],
+];
+const MIN = -5, MAX = 22, span = MAX - MIN;
+const pos = (v) => ((v - MIN) / span) * 100;
+function seg(v, cls) {
+  const z = pos(0), p = pos(Math.max(MIN, Math.min(MAX, v)));
+  const left = Math.min(z, p), w = Math.abs(p - z);
+  return `<span class="${cls}" style="left:${left}%;width:${Math.max(w, 0.6)}%"></span>`;
+}
+const fmt = (v) => (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v).toFixed(1);
+let c1 = 0, c2 = 0, rows = "";
+for (const [name, a, b] of STAGES) {
+  if (a !== null) c1 += a;
+  c2 += b;
+  rows += `<tr><td>${name}</td><td class="v">${a === null ? "—" : fmt(a)}</td><td class="v key-1090">${fmt(c1)}</td>` +
+    `<td class="v">${fmt(b)}</td><td class="v key-130">${fmt(c2)}</td>` +
+    `<td class="barcell"><div class="bar"><div class="zero"></div>${seg(c1, "b1")}${seg(c2, "b2")}</div></td></tr>`;
+}
+document.getElementById("lvlBody").innerHTML = rows;
+</script>
